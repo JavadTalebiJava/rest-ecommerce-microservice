@@ -12,5 +12,4 @@ public class StockPayload {
     private Long productId;
     private float amount;
 
-
 }

@@ -8,16 +8,16 @@ import lombok.ToString;
 import java.io.Serializable;
 
 @Data
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderPayload implements Serializable {
+@ToString
+public class ReturnPayload implements Serializable {
 
-    private Long customerId;
+    private boolean approval;
 
-    private Long productId;
-    private float amount;
-    private String cardNumber;
+    private String message;
 
-
+    public ReturnPayload(boolean approval) {
+        this.approval = approval;
+    }
 }

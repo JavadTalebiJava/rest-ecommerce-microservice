@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import restmicroservice.stock.payload.ReturnPayload;
 import restmicroservice.stock.payload.StockPayload;
 
 @Slf4j
@@ -18,18 +19,25 @@ import restmicroservice.stock.payload.StockPayload;
 public class StockController {
 
     @PostMapping
-    private ResponseEntity<Boolean> handleRequest(@RequestBody StockPayload stock) throws JsonProcessingException {
+    private ResponseEntity<ReturnPayload> handleRequest(@RequestBody StockPayload stock) throws JsonProcessingException {
         log.info("Stock-Service is accepting request.");
 
-        boolean inStock = false;
+        if(!validateProductInStock(stock)){
+            log.info("The product {} is out of stock", stock.getProductId());
 
+            return ResponseEntity.accepted().body(
+                    new ReturnPayload(false,"Invalid Credit Card Number"));
+        }
+
+        return ResponseEntity.accepted().body(new ReturnPayload(true));
+    }
+
+    private boolean validateProductInStock(StockPayload stock) {
+        boolean inStock = false;
         if (stock.getProductId() > 0
                 && stock.getAmount() > 0) {
             inStock = true;
-        } else {
-            log.info("The product {} is out of stock", stock.getProductId());
         }
-
-        return ResponseEntity.accepted().body(inStock);
+        return inStock;
     }
 }

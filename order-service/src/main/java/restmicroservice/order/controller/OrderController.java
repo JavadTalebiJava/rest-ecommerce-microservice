@@ -24,14 +24,18 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    private ResponseEntity<OrderPayload> handleOrderRequest(@RequestBody OrderPayload orderPayload) throws JsonProcessingException {
+    private ResponseEntity<OrderPayload> handleOrderRequest(@RequestBody OrderPayload orderPayload) {
         log.info("Order-Service is accepting request.");
+        var  inStock=  orderService.isProductInStock(
+                new StockPayload(orderPayload.getProductId(), orderPayload.getAmount()));
 
-        if (!orderService.isProductInStock(new StockPayload(orderPayload.getProductId(), orderPayload.getAmount()))){
+        if (!inStock.isApproval()){
             log.info("The product is out of stock");
             throw new ProductOutOfStockException("The product is out of stock");
         }
-        if (!orderService.isCardNumberValid(orderPayload.getCartNumber())){
+
+        var cardValidation = orderService.isCardNumberValid(orderPayload.getCardNumber());
+        if (!cardValidation.isApproval()){
             log.info("Invalid credit card number");
             throw new BadFormatException("Invalid credit card number");
         }
