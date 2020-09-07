@@ -1,6 +1,5 @@
 package restmicroservice.order.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import restmicroservice.order.exception.BadFormatException;
 import restmicroservice.order.exception.ProductOutOfStockException;
 import restmicroservice.order.payload.OrderPayload;
+import restmicroservice.order.payload.ReturnPayload;
 import restmicroservice.order.payload.StockPayload;
 import restmicroservice.order.service.OrderService;
 
@@ -24,7 +24,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    private ResponseEntity<OrderPayload> handleOrderRequest(@RequestBody OrderPayload orderPayload) {
+    private ResponseEntity<ReturnPayload> handleOrderRequest(@RequestBody OrderPayload orderPayload) {
         log.info("Order-Service is accepting request.");
         var  inStock=  orderService.isProductInStock(
                 new StockPayload(orderPayload.getProductId(), orderPayload.getAmount()));
@@ -40,6 +40,6 @@ public class OrderController {
             throw new BadFormatException("Invalid credit card number");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(orderPayload);
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.finishPayment(orderPayload.getCardNumber()));
     }
 }

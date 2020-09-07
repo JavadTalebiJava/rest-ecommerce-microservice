@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class ValidationPayload implements Serializable {
+public class PaymentPayload implements Serializable {
 
     private String cardNumber;
 
